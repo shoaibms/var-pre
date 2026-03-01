@@ -414,6 +414,6 @@ MIT License — see [LICENSE](LICENSE) for details.
 
 ## Contact
 
-**Mirza Shoaib** — shoaib.mirza@agriculture.vic.gov.au | shoaib.mirza@agriculture.vic.gov.au
+**Mirza Shoaib** — shoaibmirza2200@gmail.com | shoaib.mirza@agriculture.vic.gov.au
 
 Project: https://github.com/shoaibms/var-pre
