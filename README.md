@@ -120,13 +120,13 @@ Every script in this repository either (a) produces a result cited in the manusc
 | QA / verification | 11 | Post-hoc checks; no cited outputs |
 | **Total** | **57** | |
 
-### Core Pipeline (42 scripts)
+### Core Pipeline
 
 ```
 var-pre/
 ├── README.md
 ├── requirements.txt
-├── .gitignore
+├── DATA_ACCESS.md                                    # Data availability note
 │
 ├── _shared/                                          # Shared library modules
 │   ├── decoupling_metrics.py                         # DI, Jaccard, overlap metrics
