@@ -116,10 +116,10 @@ Every script in this repository either (a) produces a result cited in the manusc
 | Tier | Count | Description |
 |------|-------|-------------|
 | Core pipeline | 42 | Produce cited figures, tables, or Methods-referenced outputs |
-| Figure scripts | 10 | Generate publication figures (6 main + 4 supplementary) |
+| Figure scripts | 11 | Generate publication figures (6 main + 4 supplementary + colour utility) |
 | Convenience runners | 4 | Orchestrate core scripts in order; aid reproducibility |
 | QA / verification | 11 | Post-hoc checks; no cited outputs |
-| **Total** | **67** | |
+| **Total** | **68** | |
 
 ### Core Pipeline (42 scripts)
 
@@ -129,7 +129,6 @@ var-pre/
 ├── requirements.txt
 ├── environment.yml
 ├── DATA_ACCESS.md                                    # Data availability note
-├── .gitignore
 │
 ├── _shared/                                          # Shared library modules
 │   ├── decoupling_metrics.py                         # DI, Jaccard, overlap metrics
