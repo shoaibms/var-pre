@@ -116,11 +116,12 @@ Every script in this repository either (a) produces a result cited in the manusc
 | Tier | Count | Description |
 |------|-------|-------------|
 | Core pipeline | 42 | Produce cited figures, tables, or Methods-referenced outputs |
+| Figure scripts | 10 | Generate publication figures (6 main + 4 supplementary) |
 | Convenience runners | 4 | Orchestrate core scripts in order; aid reproducibility |
 | QA / verification | 11 | Post-hoc checks; no cited outputs |
-| **Total** | **57** | |
+| **Total** | **67** | |
 
-### Core Pipeline 
+### Core Pipeline (42 scripts)
 
 ```
 var-pre/
@@ -128,6 +129,7 @@ var-pre/
 ├── requirements.txt
 ├── environment.yml
 ├── DATA_ACCESS.md                                    # Data availability note
+├── .gitignore
 │
 ├── _shared/                                          # Shared library modules
 │   ├── decoupling_metrics.py                         # DI, Jaccard, overlap metrics
@@ -198,6 +200,21 @@ var-pre/
 ├── 13_results/                                       # Phase 13 · Supplementary table assembly
 │   ├── 01_compile_supplementary_tables.py            # Assemble internal tables from pipeline outputs
 │   └── 02_consolidate_supplementary_v2.py            # Renumber + consolidate → manuscript ST1–ST10
+│
+├── figures/                                          # Publication figure scripts
+│   ├── main/
+│   │   ├── figure_01_v7.py                           # Fig 1: Variance–prediction paradox
+│   │   ├── figure_02_v6.py                           # Fig 2: Regime characterisation
+│   │   ├── figure_03_v4.py                           # Fig 3: Mechanistic decomposition
+│   │   ├── figure_04_v4.py                           # Fig 4: Cross-model robustness
+│   │   ├── figure_5_v9.py                            # Fig 5: Biological interpretation
+│   │   └── figure_6_v5.py                            # Fig 6: VAD diagnostic + simulation
+│   │
+│   └── supp/
+│       ├── figure_S1.py                              # Fig S1: SHAP stability + DI uncertainty
+│       ├── figure_S2.py                              # Fig S2: Rank–rank atlas
+│       ├── figure_S3.py                              # Fig S3: Full ablation landscape
+│       └── figure_S4.py                              # Fig S4: VAD calibration + simulation
 │
 └── _qa/                                              # QA / verification (11 scripts)
     ├── audit_supplementary_assets_v3.py              # Verify supplementary file completeness
@@ -327,9 +344,21 @@ python 12_diagnostic/03_plot_vad_panels.py
 # 12. Compile supplementary tables
 python 13_results/01_compile_supplementary_tables.py
 python 13_results/02_consolidate_supplementary_v2.py
+
+# 13. Generate publication figures
+python figures/main/figure_01_v7.py
+python figures/main/figure_02_v6.py
+python figures/main/figure_03_v4.py
+python figures/main/figure_04_v4.py
+python figures/main/figure_5_v9.py
+python figures/main/figure_6_v5.py
+python figures/supp/figure_S1.py
+python figures/supp/figure_S2.py
+python figures/supp/figure_S3.py
+python figures/supp/figure_S4.py
 ```
 
-Each script reads from `outputs/` and writes results back to the corresponding phase subfolder.
+Each script reads from `outputs/` and writes results back to the corresponding phase subfolder. Figure scripts produce publication-ready PDF/PNG files.
 
 ---
 
@@ -385,6 +414,6 @@ MIT License — see [LICENSE](LICENSE) for details.
 
 ## Contact
 
-**Mirza Shoaib** — shoaibmirza2200@gmail.com  | shoaib.mirza@agriculture.vic.gov.au
+**Mirza Shoaib** — M.Shoaib@latrobe.edu.au | shoaib.mirza@agriculture.vic.gov.au
 
 Project: https://github.com/shoaibms/var-pre
