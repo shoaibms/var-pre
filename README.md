@@ -120,12 +120,13 @@ Every script in this repository either (a) produces a result cited in the manusc
 | QA / verification | 11 | Post-hoc checks; no cited outputs |
 | **Total** | **57** | |
 
-### Core Pipeline
+### Core Pipeline 
 
 ```
 var-pre/
 ├── README.md
 ├── requirements.txt
+├── environment.yml
 ├── DATA_ACCESS.md                                    # Data availability note
 │
 ├── _shared/                                          # Shared library modules
@@ -251,11 +252,16 @@ All 10 Supplementary Tables are assembled by a two-stage compilation pipeline:
 git clone https://github.com/shoaibms/var-pre.git
 cd var-pre
 
+# Option 1: pip
 python -m venv venv
 .\venv\Scripts\Activate.ps1     # Windows PowerShell
 # venv\Scripts\activate.bat     # Windows cmd.exe
 # source venv/bin/activate      # macOS/Linux
 pip install -r requirements.txt
+
+# Option 2: conda
+conda env create -f environment.yml
+conda activate var-pre
 ```
 
 ---
@@ -336,7 +342,7 @@ Each script reads from `outputs/` and writes results back to the corresponding p
 | **CCLE/DepMap** | 369 | mRNA, CNV, proteomics | Tissue lineage (22 classes) | [DepMap 24Q2](https://depmap.org/portal/) |
 | **TCGA-GBM** | 47 | mRNA, methylation, CNV | GBM subtype (4 classes) | [UCSC Xena](https://tcga.xenahubs.net/) |
 
-Raw datasets are obtained from original providers under their respective terms; this repository includes download and processing code (`00_manifest/01_download_all_data.py`) but does not redistribute raw data.
+See [`DATA_ACCESS.md`](DATA_ACCESS.md) for download instructions. Raw datasets are obtained from original providers under their respective terms; this repository includes download and processing code but does not redistribute raw data.
 
 ---
 
@@ -379,6 +385,6 @@ MIT License — see [LICENSE](LICENSE) for details.
 
 ## Contact
 
-**Mirza Shoaib** — 	shoaibmirza2200@gmail.com | shoaib.mirza@agriculture.vic.gov.au
+**Mirza Shoaib** — shoaibmirza2200@gmail.com  | shoaib.mirza@agriculture.vic.gov.au
 
 Project: https://github.com/shoaibms/var-pre
