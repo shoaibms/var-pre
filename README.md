@@ -16,9 +16,19 @@ Selecting highly variable features (genes, CpGs, metabolites) is among the most 
 
 The variance–prediction relationship partitions into three reproducible regimes: **coupled** (variance filtering is acceptable), **decoupled** (variance filtering is useless), and **anti-aligned** (variance filtering is actively harmful — worse than random selection). In the most affected view (mlomics:methylation at K = 10%), variance-based selection degrades balanced accuracy by 16.2 pp relative to random selection. SHAP-guided selection consistently outperforms variance filtering (mean 8.2 pp; max 26.5 pp across views at K = 10%), while systematically excluding "hidden biomarkers" with strong discriminative signal and low variance.
 
-We introduce the **Decoupling Index (DI)** — the Jaccard overlap between top-K% variance-ranked and top-K% importance-ranked feature sets, normalised against an analytical random expectation so that DI ≈ 1 indicates chance-level overlap (decoupled), DI < 1 indicates coupling, and DI > 1 indicates anti-alignment. We also develop the **Variance Alignment Diagnostic (VAD)**, a label-aware, model-free pre-screening tool (no fitting required) computed on the training split only from variance decomposition statistics — η_ES(K), VSA(K), and PCLA (with SAS as a complementary axis-level measure) — which assigns each view to a GREEN / YELLOW / RED risk zone before any model is trained.
+To quantify this, we define the **Decoupling Index (DI)** — the Jaccard overlap between top-K% variance-ranked and top-K% importance-ranked feature sets, normalised against an analytical random expectation so that DI ≈ 1 indicates chance-level overlap (decoupled), DI < 1 indicates coupling, and DI > 1 indicates anti-alignment. As a practical follow-up, we develop the **Variance Alignment Diagnostic (VAD)**, a label-aware, model-free pre-screening tool (no fitting required) computed on the training split only from variance decomposition statistics — η_ES(K), VSA(K), and PCLA (with SAS as a complementary axis-level measure) — which flags whether variance filtering is likely to be harmful for a given dataset before any model is trained. When VAD flags risk, **Signal-Aware Filtering (SAF)** — ranking features by between-class variance (V_between) — offers a low-cost, label-aware remediation step (< 1 s per training split).
 
 > This repository provides all analysis code for full reproducibility.
+
+### vardiag — standalone Python package
+
+The VAD diagnostic is also available as a lightweight, installable Python package for use in your own pipelines:
+
+```bash
+pip install vardiag
+```
+
+[![PyPI](https://img.shields.io/pypi/v/vardiag)](https://pypi.org/project/vardiag/)
 
 ---
 
@@ -30,8 +40,9 @@ We introduce the **Decoupling Index (DI)** — the Jaccard overlap between top-K
 | **Variance filtering can be worse than random** | mlomics:methylation: Δ(TopVar − Random) = −16.2 pp balanced accuracy (XGBoost, K = 10%); TopVar underperforms random in 7/14 views |
 | **Hidden biomarkers are systematically excluded** | Features in the low-variance, high-importance quadrant (Q4, median-split) constitute a mean 17.9% of features across views (range 1.9–25.9%) |
 | **Regime is modality × context, not modality alone** | The same modality (e.g. mRNA) can be coupled in one dataset and decoupled in another; 0/3 shared modalities show consistent DI across datasets |
-| **VAD predicts harm without model training** | η_ES and PCLA jointly predict ablation harm from training-split statistics alone (PCLA: ρ = 0.538, p = 0.047 under XGBoost) |
-| **Cross-model validation** | XGBoost and Random Forest agree on regime direction in 10/14 views (Spearman ρ = 0.79, p = 0.0007) |
+| **VAD can flag harm before model training** | η_ES and PCLA jointly predict ablation harm from training-split statistics alone (PCLA: ρ = 0.538, p = 0.047 under XGBoost) |
+| **SAF offers a low-cost remediation when VAD flags risk** | On the anti-aligned methylation hero view, SAF improved balanced accuracy over TopVar by 21.1 pp at K = 10% (95% CI: 19.6, 22.3), recovering ~85% of the gap to TopSHAP; VAD + SAF completes in < 1 s per training split |
+| **Cross-model validation** | XGBoost and Random Forest agree on regime direction in 10/14 views (Spearman ρ = 0.79, p = 0.0007); LinearSVC sensitivity analysis confirms the harmful-regime signal on hero views |
 
 ---
 
@@ -111,17 +122,17 @@ flowchart TB
 
 ## Repository Structure
 
-Every script in this repository either (a) produces a result cited in the manuscript, (b) is a prerequisite computation referenced in Methods, or (c) is a shared library imported by (a) or (b). Scripts are organised into 13 pipeline phases with gap-free sequential numbering within each folder.
+Every script in this repository either (a) produces a result cited in the manuscript, (b) is a prerequisite computation referenced in Methods, or (c) is a shared library imported by (a) or (b). Scripts are organised into 14 pipeline phases with gap-free sequential numbering within each folder.
 
 | Tier | Count | Description |
 |------|-------|-------------|
-| Core pipeline | 42 | Produce cited figures, tables, or Methods-referenced outputs |
+| Core pipeline | 47 | Produce cited figures, tables, or Methods-referenced outputs |
 | Figure scripts | 11 | Generate publication figures (6 main + 4 supplementary + colour utility) |
 | Convenience runners | 4 | Orchestrate core scripts in order; aid reproducibility |
 | QA / verification | 11 | Post-hoc checks; no cited outputs |
-| **Total** | **68** | |
+| **Total** | **73** | |
 
-### Core Pipeline (42 scripts)
+### Core Pipeline (47 scripts)
 
 ```
 var-pre/
@@ -171,7 +182,7 @@ var-pre/
 │   └── 03_label_permutation_test.py                  # Label-permuted null distribution (Fig 3e; ST6)
 │
 ├── 07_ablation/                                      # Phase 7 · Feature-subset ablation
-│   └── 01_feature_subset_ablation.py                 # TopVar vs TopSHAP vs Random at K% (Fig 4a–c; ST4)
+│   └── 01_feature_subset_ablation.py                 # TopVar vs TopSHAP vs SAF vs Random at K% (Fig 4a–c; ST4)
 │
 ├── 08_biology/                                       # Phase 8 · Biological validation
 │   ├── 01_gene_mapping_sensitivity.py                # Gene-ID mapping QC
@@ -199,6 +210,13 @@ var-pre/
 ├── 13_results/                                       # Phase 13 · Supplementary table assembly
 │   ├── 01_compile_supplementary_tables.py            # Assemble internal tables from pipeline outputs
 │   └── 02_consolidate_supplementary_v2.py            # Renumber + consolidate → manuscript ST1–ST10
+│
+├── 14_supplementary_analyses/                        # Phase 14 · Supplementary analyses
+│   ├── 01_generate_feature_eta_tables.py             # Per-feature η² tables for SAF ranking
+│   ├── 02_saf_feature_table_qc.py                    # QC check on η² feature tables
+│   ├── 03_runtime_benchmark.py                       # Wall-clock: VAD+SAF vs supervised ablation
+│   ├── 04_cap_seed_stability.py                      # Feature-cap seed stability across VAD zones
+│   └── 05_linearsvc_sensitivity.py                   # LinearSVC regime sensitivity check
 │
 ├── figures/                                          # Publication figure scripts
 │   ├── main/
@@ -244,8 +262,9 @@ Four runner scripts orchestrate their respective phases in a single command:
 
 ## Supplementary Tables
 
-All 10 Supplementary Tables are assembled by a two-stage compilation pipeline:
+Supplementary Tables ST1–ST10 are assembled by a two-stage compilation pipeline:
 `01_compile_supplementary_tables.py` → `02_consolidate_supplementary_v2.py`.
+ST11–ST13 are produced by the supplementary analyses in Phase 14.
 
 | ST | Title |
 |----|-------|
@@ -259,6 +278,9 @@ All 10 Supplementary Tables are assembled by a two-stage compilation pipeline:
 | ST8 | Variance-Alignment Diagnostic (VAD) metrics across feature-selection thresholds |
 | ST9 | Simulation regime-recovery validation |
 | ST10 | Unsupervised clustering comparison across feature-selection strategies |
+| ST11 | LinearSVC hero-view sensitivity analysis |
+| ST12 | Cap-seed stability for subsampled views |
+| ST13 | Runtime benchmark: VAD + SAF vs supervised ablation |
 
 ---
 
@@ -344,7 +366,14 @@ python 12_diagnostic/03_plot_vad_panels.py
 python 13_results/01_compile_supplementary_tables.py
 python 13_results/02_consolidate_supplementary_v2.py
 
-# 13. Generate publication figures
+# 13. Supplementary analyses (runtime, cap-seed stability, LinearSVC sensitivity)
+python 14_supplementary_analyses/01_generate_feature_eta_tables.py --outputs-dir outputs
+python 14_supplementary_analyses/02_saf_feature_table_qc.py --outputs-dir outputs
+python 14_supplementary_analyses/03_runtime_benchmark.py --outputs-dir outputs
+python 14_supplementary_analyses/04_cap_seed_stability.py --outputs-dir outputs --data-dir data/raw
+python 14_supplementary_analyses/05_linearsvc_sensitivity.py --outputs-dir outputs
+
+# 14. Generate publication figures
 python figures/main/figure_01_v7.py
 python figures/main/figure_02_v6.py
 python figures/main/figure_03_v4.py
