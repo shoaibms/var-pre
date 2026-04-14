@@ -7,9 +7,15 @@ This study re-analyses publicly available multi-omics data. No new data were gen
 | Dataset | Source | Views | Reference |
 |---------|--------|-------|-----------|
 | MLOmics BRCA | HuggingFace (AIBIC/MLOmics) + UCSC Xena | mRNA, miRNA, methylation, CNV | MLOmics benchmark; Cancer Genome Atlas Network (2012); Parker et al. (2009) |
-| IBDMDB | iHMP/HMP2 (ibdmdb.org) | MGX, MGX_func, MPX, MBX | Lloyd-Price et al. (2019) |
+| IBDMDB | iHMP/HMP2 (ibdmdb.org) | MGX, MTX, MPX, MBX | Lloyd-Price et al. (2019) |
 | CCLE/DepMap | DepMap Portal (24Q2) + Gygi Lab | mRNA, CNV, proteomics | Ghandi et al. (2019); Nusinow et al. (2020) |
 | TCGA-GBM | UCSC Xena Hub | mRNA, methylation, CNV | TCGA Research Network (2008); Verhaak et al. (2010); Goldman et al. (2020) |
+
+---
+> **▶ Reproducibility — Data Access.**
+> Complete all download steps below before running any pipeline script.
+> Return to `README.md` for the full execution sequence.
+---
 
 ## Download Instructions
 
@@ -91,8 +97,12 @@ Place in: `data/raw/tcga_gbm/`
 From the repository root, the pipeline includes a script that retrieves all datasets programmatically:
 
 ```bash
-python 00_manifest/01_download_all_data.py --datasets all
+python code/00_manifest/01_download_all_data.py --datasets mlomics,ibdmdb,ccle,tcga_gbm
 ```
+
+> **Note:** `--datasets all` downloads additional auxiliary datasets not used
+> in this manuscript. Use the explicit list above to reproduce manuscript
+> results only.
 
 This script handles DepMap API queries, Globus-backed IBDMDB links, HuggingFace downloads, and Xena Hub retrieval.
 
@@ -101,14 +111,14 @@ This script handles DepMap API queries, Globus-backed IBDMDB links, HuggingFace 
 From the repository root:
 
 ```bash
-python 00_manifest/02_verify_downloads.py
+python code/00_manifest/02_verify_downloads.py
 ```
 
 Optional deeper verification:
 
 ```bash
-python 00_manifest/02_verify_downloads.py --schema-check
-python 00_manifest/02_verify_downloads.py --deep --schema-check
+python code/00_manifest/02_verify_downloads.py --schema-check
+python code/00_manifest/02_verify_downloads.py --deep --schema-check
 ```
 
 ## Expected Directory Structure
@@ -132,7 +142,7 @@ data/raw/
 │   ├── OmicsExpressionProteinCodingGenesTPMLogp1.csv
 │   ├── OmicsCNGene.csv
 │   ├── Model.csv
-│   └── protein_quant_current_normalized.csv
+│   └── protein_quant_current_normalized.csv.gz   # If already decompressed: also accepts protein_quant_current_normalized.csv
 └── tcga_gbm/
     ├── HiSeqV2
     ├── HumanMethylation450
@@ -145,7 +155,7 @@ data/raw/
 | Dataset | n | Classes | Task | Views | Role |
 |---------|---|---------|------|-------|------|
 | MLOmics BRCA | 671 | 5 (PAM50) | Breast cancer subtype | mRNA, miRNA, methylation, CNV | Primary |
-| IBDMDB | 155 | 3 (nonIBD, UC, CD) | IBD diagnosis | MGX, MGX_func, MPX, MBX | Primary |
+| IBDMDB | 155 | 3 (nonIBD, UC, CD) | IBD diagnosis | MGX, MTX, MPX, MBX | Primary |
 | CCLE/DepMap | 369 | 22 (tissue lineage) | Tissue-of-origin | mRNA, CNV, proteomics | Primary |
 | TCGA-GBM | 47 | 4 (GBM subtypes) | GBM subtype | mRNA, methylation, CNV | Sensitivity |
 
@@ -164,7 +174,7 @@ Ultra-high-dimensional views were randomly subsampled (seed = 1, without replace
 
 | View | Original features | Capped to | Seed |
 |------|------------------|-----------|------|
-| IBDMDB MGX_func | 917,164 | 10,000 | 1 |
+| IBDMDB MTX | 917,164 | 10,000 | 1 |
 | IBDMDB MBX | 81,867 | 20,000 | 1 |
 | TCGA-GBM methylation | ~450,000 | 20,000 | 1 |
 
@@ -183,6 +193,9 @@ Ultra-high-dimensional views were randomly subsampled (seed = 1, without replace
 6. TCGA Research Network (2008). Comprehensive genomic characterization defines human glioblastoma genes and core pathways. *Nature* 455, 1061–1068.
 
 7. Verhaak, R. G. W. et al. (2010). Integrated genomic analysis identifies clinically relevant subtypes of glioblastoma. *Cancer Cell* 17, 98–110.
+
+
+8. Goldman, M.J. et al. (2020). Visualizing and interpreting cancer genomics data via the Xena platform. *Nature Biotechnology* 38, 675–678.
 
 
 8. Goldman, M.J. et al. (2020). Visualizing and interpreting cancer genomics data via the Xena platform. *Nature Biotechnology* 38, 675–678.
