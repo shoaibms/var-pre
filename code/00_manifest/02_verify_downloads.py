@@ -4,7 +4,7 @@ Variance-Prediction Paradox - Download Verification Script v5.2
 ================================================================
 
 Verifies downloaded datasets are complete and valid.
-Matches v5.2 download script (full MASTER_PLAN scope).
+Matches 01_download_all_data.py v11.2 (mlomics, ibdmdb, ccle, tcga_gbm).
 
 Changes in v5.2:
 - Correct MBX filename: HMP2_metabolomics_w_metadata.biom(.gz)
@@ -54,43 +54,77 @@ EXPECTED_FILES = {
             "BRCA_clinicalMatrix"
         ],
     },
-    "pbmc_multiome": {
-        "subdir": "pbmc_multiome",
-        "files": {
-            "filtered_feature_bc_matrix.h5": {"min_size": 10 * 1024 * 1024},  # 10 MB
-            "per_barcode_metrics.csv": {"min_size": 1 * 1024 * 1024},          # 1 MB
-            "atac_peaks.bed": {"min_size": 1 * 1024 * 1024},                   # 1 MB
-            "atac_peak_annotation.tsv": {"min_size": 1 * 1024 * 1024},         # 1 MB
-            "analysis_summary.html": {"min_size": 100 * 1024},                 # 100 KB
-            "cloupe.cloupe": {"min_size": 100 * 1024 * 1024},                  # 100 MB
-        },
-        "required_for_analysis": ["filtered_feature_bc_matrix.h5"],
-    },
     "ibdmdb": {
         "subdir": "ibdmdb",
         "files": {
             # Metadata
             "hmp2_metadata.csv": {"min_size": 1 * 1024 * 1024},           # 1 MB
-            "dysbiosis_scores.tsv": {"min_size": 10 * 1024},              # 10 KB
             # Metagenomics (MGX) - View 1
-            "taxonomic_profiles.tsv": {"min_size": 2 * 1024 * 1024},      # 2 MB decompressed
+            "taxonomic_profiles_3.tsv": {"min_size": 2 * 1024 * 1024},    # 2 MB decompressed
             "pathabundance_relab.tsv": {"min_size": 20 * 1024 * 1024},    # 20 MB decompressed
+            # Metatranscriptomics (MTX) - View 3
+            "genefamilies.tsv": {"min_size": 200 * 1024},          # MTX gene families, decompressed
+            # Proteomics (MPX) - View 4
+            "HMP2_proteomics_ecs.tsv": {"min_size": 50 * 1024},    # MPX ECS table, decompressed
             # Metabolomics (MBX) - View 2 (CORRECT filename with _w_metadata)
             "HMP2_metabolomics_w_metadata.biom": {"min_size": 5 * 1024 * 1024},  # 5 MB decompressed
         },
         "alt_files": {
             # Compressed versions also OK
-            "taxonomic_profiles.tsv.gz": {"min_size": 500 * 1024},
+            "taxonomic_profiles_3.tsv.gz": {"min_size": 500 * 1024},
             "pathabundance_relab.tsv.gz": {"min_size": 5 * 1024 * 1024},
+            "genefamilies.tsv.gz": {"min_size": 200 * 1024},
+            "HMP2_proteomics_ecs.tsv.gz": {"min_size": 50 * 1024},
             "HMP2_metabolomics_w_metadata.biom.gz": {"min_size": 5 * 1024 * 1024},
         },
         "required_for_analysis": [
-            "hmp2_metadata.csv", 
-            "taxonomic_profiles.tsv"
+            "hmp2_metadata.csv",
+            "taxonomic_profiles_3.tsv"
         ],
         "required_for_multiomics": [
-            "taxonomic_profiles.tsv",
-            "HMP2_metabolomics_w_metadata.biom"
+            "taxonomic_profiles_3.tsv",
+            "HMP2_metabolomics_w_metadata.biom",
+            "genefamilies.tsv",
+            "HMP2_proteomics_ecs.tsv",
+        ],
+    },
+    "ccle": {
+        "subdir": "ccle",
+        "files": {
+            # DepMap 24Q2 core files (thresholds mirror 01_download_all_data.py)
+            "OmicsExpressionProteinCodingGenesTPMLogp1.csv": {"min_size": 50 * 1024 * 1024},  # 50 MB
+            "OmicsCNGene.csv": {"min_size": 50 * 1024 * 1024},                                # 50 MB
+            "Model.csv": {"min_size": 200 * 1024},                                            # 200 KB
+            # Proteomics (Gygi Lab) - decompressed form
+            "protein_quant_current_normalized.csv": {"min_size": 50 * 1024 * 1024},           # 50 MB decompressed
+        },
+        "alt_files": {
+            # Accept compressed proteomics file
+            "protein_quant_current_normalized.csv.gz": {"min_size": 50 * 1024 * 1024},
+        },
+        "required_for_analysis": [
+            "OmicsExpressionProteinCodingGenesTPMLogp1.csv",
+            "Model.csv",
+        ],
+    },
+    "tcga_gbm": {
+        "subdir": "tcga_gbm",
+        "files": {
+            # UCSC Xena TCGA-GBM files (thresholds mirror 01_download_all_data.py)
+            "HiSeqV2": {"min_size": 5 * 1024 * 1024},                                          # 5 MB decompressed
+            "HumanMethylation450": {"min_size": 50 * 1024 * 1024},                             # 50 MB decompressed
+            "Gistic2_CopyNumber_Gistic2_all_thresholded.by_genes": {"min_size": 100 * 1024},   # 100 KB decompressed
+            "GBM_clinicalMatrix": {"min_size": 100 * 1024},                                    # 100 KB
+        },
+        "alt_files": {
+            # Accept compressed Xena payloads
+            "HiSeqV2.gz": {"min_size": 5 * 1024 * 1024},
+            "HumanMethylation450.gz": {"min_size": 50 * 1024 * 1024},
+            "Gistic2_CopyNumber_Gistic2_all_thresholded.by_genes.gz": {"min_size": 100 * 1024},
+        },
+        "required_for_analysis": [
+            "HiSeqV2",
+            "GBM_clinicalMatrix",
         ],
     },
 }
@@ -500,7 +534,7 @@ def main():
     
     print("=" * 70)
     print("VARIANCE-PREDICTION PARADOX - DOWNLOAD VERIFICATION v5.2")
-    print("(Full MASTER_PLAN scope: Subtype + Survival, MGX + MBX)")
+    print("(Scope: mlomics, ibdmdb, ccle, tcga_gbm)")
     print("=" * 70)
     print(f"Data directory: {data_dir}")
     print(f"Deep verification: {args.deep}")
@@ -599,7 +633,7 @@ def main():
     )
     
     if full_master_plan:
-        print("[OK] FULL MASTER_PLAN READY: All datasets complete with survival + multi-omics")
+        print("[OK] ALL DATASETS READY: mlomics, ibdmdb, ccle, and tcga_gbm complete")
         return 0
     elif all_ready:
         print("[OK] CORE ANALYSIS READY: Basic pipeline can run")
