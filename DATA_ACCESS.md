@@ -6,17 +6,17 @@ This study re-analyses publicly available multi-omics data. No new data were gen
 
 | Dataset | Source | Views | Reference |
 |---------|--------|-------|-----------|
-| MLOmics BRCA | HuggingFace (AIBIC/MLOmics) | mRNA, miRNA, methylation, CNV | MLOmics benchmark; TCGA-BRCA (Cancer Genome Atlas Network, 2012) |
-| IBDMDB | iHMP/HMP2 (ibdmdb.org) | MGX, MGX_func, MPX, MBX | Lloyd-Price et al. 2019 |
-| CCLE/DepMap | DepMap Portal (24Q2) | mRNA, CNV, proteomics | Ghandi et al. 2019; Nusinow et al. 2020 |
-| TCGA-GBM | UCSC Xena Hub | mRNA, methylation, CNV | TCGA Network 2008; Goldman et al. 2020 |
+| MLOmics BRCA | HuggingFace (AIBIC/MLOmics) + UCSC Xena | mRNA, miRNA, methylation, CNV | MLOmics benchmark; Cancer Genome Atlas Network (2012); Parker et al. (2009) |
+| IBDMDB | iHMP/HMP2 (ibdmdb.org) | MGX, MGX_func, MPX, MBX | Lloyd-Price et al. (2019) |
+| CCLE/DepMap | DepMap Portal (24Q2) + Gygi Lab | mRNA, CNV, proteomics | Ghandi et al. (2019); Nusinow et al. (2020) |
+| TCGA-GBM | UCSC Xena Hub | mRNA, methylation, CNV | TCGA Research Network (2008); Verhaak et al. (2010); Goldman et al. (2020) |
 
 ## Download Instructions
 
 ### 1) MLOmics BRCA
 
 **Source:** HuggingFace — AIBIC/MLOmics benchmark  
-**URL:** https://huggingface.co/datasets/AIBIC/MLOmics  
+**URL:** `https://huggingface.co/datasets/AIBIC/MLOmics`  
 **Subdirectory:** `Main_Dataset/Classification_datasets/GS-BRCA/Aligned/`
 
 Download:
@@ -26,20 +26,21 @@ Download:
 - `BRCA_CNV_aligned.csv`
 - `BRCA_label_num.csv`
 
-Clinical labels (PAM50 subtypes):
-- `BRCA_clinicalMatrix` from UCSC Xena: https://tcga.xenahubs.net/download/TCGA.BRCA.sampleMap/BRCA_clinicalMatrix
+Clinical matrix:
+- `BRCA_clinicalMatrix` from UCSC Xena  
+  `https://tcga.xenahubs.net/download/TCGA.BRCA.sampleMap/BRCA_clinicalMatrix`
 
 Place in: `data/raw/mlomics/`
 
 ### 2) IBDMDB (iHMP/HMP2)
 
 **Source:** Integrative Human Microbiome Project — IBDMDB portal  
-**URL:** https://ibdmdb.org/  
-**Note:** Files are served via Globus-backed links from the IBDMDB run-products page.
+**URL:** `https://ibdmdb.org/`  
+**Note:** Files are served via Globus-backed links from the IBDMDB run-products pages.
 
 Download:
 - `taxonomic_profiles_3.tsv` (metagenomic taxonomy)
-- `genefamilies.tsv` (functional gene families; ~3.7 GB)
+- `genefamilies.tsv` (functional gene families)
 - `HMP2_proteomics_ecs.tsv` (metaproteomics)
 - `HMP2_metabolomics_w_metadata.biom` (metabolomics)
 - `hmp2_metadata.csv` (sample metadata, participant IDs, diagnosis)
@@ -49,8 +50,8 @@ Place in: `data/raw/ibdmdb/`
 ### 3) CCLE/DepMap
 
 **Source:** DepMap Portal — Public release 24Q2  
-**URL:** https://depmap.org/portal/  
-**API:** https://depmap.org/portal/api/download/files (release: "DepMap Public 24Q2")
+**URL:** `https://depmap.org/portal/`  
+**API:** `https://depmap.org/portal/api/download/files` with release `"DepMap Public 24Q2"`
 
 Download via DepMap portal or API:
 - `OmicsExpressionProteinCodingGenesTPMLogp1.csv` (mRNA expression)
@@ -58,15 +59,15 @@ Download via DepMap portal or API:
 - `Model.csv` (cell line metadata and tissue annotations)
 
 Proteomics (separate source — Gygi Lab):
-- `protein_quant_current_normalized.csv.gz`
-- **URL:** https://gygi.hms.harvard.edu/data/ccle/protein_quant_current_normalized.csv.gz
+- `protein_quant_current_normalized.csv.gz`  
+  `https://gygi.hms.harvard.edu/data/ccle/protein_quant_current_normalized.csv.gz`
 
 Place in: `data/raw/ccle/`
 
 ### 4) TCGA-GBM
 
 **Source:** UCSC Xena Hub — TCGA GBM cohort  
-**URL:** https://tcga.xenahubs.net/  
+**URL:** `https://tcga.xenahubs.net/`  
 **Cohort:** `TCGA.GBM.sampleMap`
 
 Download:
@@ -76,7 +77,7 @@ Download:
 - `GBM_clinicalMatrix` (subtype labels)
 
 Direct download links:
-```
+```text
 https://tcga.xenahubs.net/download/TCGA.GBM.sampleMap/HiSeqV2.gz
 https://tcga.xenahubs.net/download/TCGA.GBM.sampleMap/HumanMethylation450.gz
 https://tcga.xenahubs.net/download/TCGA.GBM.sampleMap/Gistic2_CopyNumber_Gistic2_all_thresholded.by_genes.gz
@@ -87,43 +88,27 @@ Place in: `data/raw/tcga_gbm/`
 
 ## Automated Download
 
-The pipeline includes a download script that retrieves all datasets programmatically:
+From the repository root, the pipeline includes a script that retrieves all datasets programmatically:
 
 ```bash
-python code/compute/00_download/01_download_all_data.py --datasets all
+python 00_manifest/01_download_all_data.py --datasets all
 ```
 
-This script handles DepMap API queries, Globus-backed IBDMDB links, HuggingFace downloads, and Xena Hub retrieval with automatic integrity checks.
+This script handles DepMap API queries, Globus-backed IBDMDB links, HuggingFace downloads, and Xena Hub retrieval.
 
 ## Verification
 
+From the repository root:
+
 ```bash
-# Check all raw files are present and non-empty
-python -c "
-import os
-expected = {
-    'data/raw/mlomics': ['BRCA_mRNA_aligned.csv', 'BRCA_miRNA_aligned.csv',
-                          'BRCA_Methy_aligned.csv', 'BRCA_CNV_aligned.csv',
-                          'BRCA_label_num.csv', 'BRCA_clinicalMatrix'],
-    'data/raw/ibdmdb': ['taxonomic_profiles_3.tsv', 'genefamilies.tsv',
-                         'HMP2_proteomics_ecs.tsv', 'HMP2_metabolomics_w_metadata.biom',
-                         'hmp2_metadata.csv'],
-    'data/raw/ccle':   ['OmicsExpressionProteinCodingGenesTPMLogp1.csv',
-                         'OmicsCNGene.csv', 'Model.csv',
-                         'protein_quant_current_normalized.csv'],
-    'data/raw/tcga_gbm': ['HiSeqV2', 'HumanMethylation450',
-                           'Gistic2_CopyNumber_Gistic2_all_thresholded.by_genes',
-                           'GBM_clinicalMatrix']
-}
-for folder, files in expected.items():
-    for f in files:
-        path = os.path.join(folder, f)
-        gz = path + '.gz'
-        found = os.path.exists(path) or os.path.exists(gz)
-        size = os.path.getsize(path) if os.path.exists(path) else (os.path.getsize(gz) if os.path.exists(gz) else 0)
-        status = '✅' if found and size > 0 else '❌'
-        print(f'{status} {path} ({size:,} bytes)')
-"
+python 00_manifest/02_verify_downloads.py
+```
+
+Optional deeper verification:
+
+```bash
+python 00_manifest/02_verify_downloads.py --schema-check
+python 00_manifest/02_verify_downloads.py --deep --schema-check
 ```
 
 ## Expected Directory Structure
@@ -166,7 +151,7 @@ data/raw/
 
 ## Sensitivity Views
 
-Two additional views were generated for robustness checks (not separate downloads):
+Two additional views were generated for robustness checks and do not require separate downloads.
 
 | View | Derived from | Transform |
 |------|-------------|-----------|
@@ -175,7 +160,7 @@ Two additional views were generated for robustness checks (not separate download
 
 ## Feature Caps
 
-Ultra-high-dimensional views were randomly subsampled (seed = 1, without replacement) to fixed caps **without selecting top-variance features**, preserving the variance distribution:
+Ultra-high-dimensional views were randomly subsampled (seed = 1, without replacement) to fixed caps without selecting top-variance features, preserving the variance distribution.
 
 | View | Original features | Capped to | Seed |
 |------|------------------|-----------|------|
@@ -187,16 +172,17 @@ Ultra-high-dimensional views were randomly subsampled (seed = 1, without replace
 
 1. Cancer Genome Atlas Network (2012). Comprehensive molecular portraits of human breast tumours. *Nature* 490, 61–70.
 
-2. Parker, J.S. et al. (2009). Supervised risk predictor of breast cancer based on intrinsic subtypes. *Journal of Clinical Oncology* 27, 1160–1167.
+2. Parker, J. S. et al. (2009). Supervised risk predictor of breast cancer based on intrinsic subtypes. *Journal of Clinical Oncology* 27, 1160–1167.
 
 3. Lloyd-Price, J. et al. (2019). Multi-omics of the gut microbial ecosystem in inflammatory bowel diseases. *Nature* 569, 655–662.
 
 4. Ghandi, M. et al. (2019). Next-generation characterization of the Cancer Cell Line Encyclopedia. *Nature* 569, 503–508.
 
-5. Nusinow, D.P. et al. (2020). Quantitative proteomics of the Cancer Cell Line Encyclopedia. *Cell* 180, 387–402.
+5. Nusinow, D. P. et al. (2020). Quantitative proteomics of the Cancer Cell Line Encyclopedia. *Cell* 180, 387–402.
 
 6. TCGA Research Network (2008). Comprehensive genomic characterization defines human glioblastoma genes and core pathways. *Nature* 455, 1061–1068.
 
-7. Verhaak, R.G.W. et al. (2010). Integrated genomic analysis identifies clinically relevant subtypes of glioblastoma. *Cancer Cell* 17, 98–110.
+7. Verhaak, R. G. W. et al. (2010). Integrated genomic analysis identifies clinically relevant subtypes of glioblastoma. *Cancer Cell* 17, 98–110.
+
 
 8. Goldman, M.J. et al. (2020). Visualizing and interpreting cancer genomics data via the Xena platform. *Nature Biotechnology* 38, 675–678.
