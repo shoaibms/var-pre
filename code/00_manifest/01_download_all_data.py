@@ -12,8 +12,8 @@ Key changes vs v11.1:
 - Added --force to overwrite existing files.
 
 Usage:
-  python download_all_data_v11_2.py --datasets mlomics,ibdmdb,ccle,nci60,arabidopsis,tcga_gbm --data-dir data/raw
-  python download_all_data_v11_2.py --list-datasets
+  python code/00_manifest/01_download_all_data.py --datasets mlomics,ibdmdb,ccle,tcga_gbm --data-dir data/raw
+  python code/00_manifest/01_download_all_data.py --list-datasets
 
 Notes:
 - Some sources (e.g., IBDMDB Globus-backed URLs, DepMap signed URLs) can change over time. This script
@@ -825,7 +825,7 @@ def main() -> None:
 
     manifest = {
         "timestamp": datetime.now().isoformat(),
-        "version": "11.0",
+        "version": "11.2",
         "data_dir": str(data_dir),
         "depmap_release": args.depmap_release,
         "datasets": all_results,
@@ -839,4 +839,6 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+
 
