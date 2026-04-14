@@ -304,86 +304,91 @@ conda activate var-pre
 
 ---
 
+> **▶ Reproducibility — Start Here.**
+> The section below is the complete, ordered command sequence to reproduce
+> all manuscript results from raw data. Follow the steps in order.
+---
+
 ## Quick Start: Reproduce Core Results
 
 After activating the environment, run phases sequentially from the project root:
 
 ```bash
 # 1. Download and verify raw data
-python 00_manifest/01_download_all_data.py
-python 00_manifest/02_verify_downloads.py
+python code/00_manifest/01_download_all_data.py
+python code/00_manifest/02_verify_downloads.py
 
 # 2. Build normalised bundles and CV splits
-python 01_bundles/01_prepare_all_bundles.py
-python 01_bundles/02_bundle_integrity_check.py
-python 01_bundles/03_normalize_qc_all_bundles.py
+python code/01_bundles/01_prepare_all_bundles.py
+python code/01_bundles/02_bundle_integrity_check.py
+python code/01_bundles/03_normalize_qc_all_bundles.py
 
 # 3. Compute variance scores and PCA embeddings
-python 02_unsupervised/01_total_variance_scores.py
-python 02_unsupervised/02_pca_embeddings.py
+python code/02_unsupervised/01_total_variance_scores.py
+python code/02_unsupervised/02_pca_embeddings.py
 
 # 4. Train models and compute SHAP importance
-python 03_supervised/01_define_tasks_and_splits.py
-python 03_supervised/02_train_baselines.py
-python 03_supervised/03_train_tree_models.py
-python 03_supervised/04_eval_models.py
+python code/03_supervised/01_define_tasks_and_splits.py
+python code/03_supervised/02_train_baselines.py
+python code/03_supervised/03_train_tree_models.py
+python code/03_supervised/04_eval_models.py
 
 # 5. Compute feature importance and decomposition
-python 04_importance/01_compute_shap_cv.py
-python 04_importance/02_aggregate_shap.py
-python 04_importance/03_di_uncertainty.py
-python 04_importance/04_rj_decomposition.py
+python code/04_importance/01_compute_shap_cv.py
+python code/04_importance/02_aggregate_shap.py
+python code/04_importance/03_di_uncertainty.py
+python code/04_importance/04_rj_decomposition.py
 
 # 6. Compute Decoupling Index
-python 05_decoupling/01_decoupling_aggregator.py
+python code/05_decoupling/01_decoupling_aggregator.py
 
 # 7. Robustness controls
-python 06_robustness/01_cross_model_shap_agreement.py
-python 06_robustness/02_shap_stability.py
-python 06_robustness/03_label_permutation_test.py
+python code/06_robustness/01_cross_model_shap_agreement.py
+python code/06_robustness/02_shap_stability.py
+python code/06_robustness/03_label_permutation_test.py
 
 # 8. Feature-subset ablation
-python 07_ablation/01_feature_subset_ablation.py
+python code/07_ablation/01_feature_subset_ablation.py
 
-# 9. Biological validation (or: python 08_biology/00_run_phase8.py)
-python 08_biology/01_gene_mapping_sensitivity.py
-python 08_biology/02_pathway_enrichment.py
-python 08_biology/03_module_overlap.py
-python 08_biology/04_exemplar_panels_data.py
-python 08_biology/05_convergence_null_model.py
+# 9. Biological validation (or: python code/08_biology/00_run_phase8.py)
+python code/08_biology/01_gene_mapping_sensitivity.py
+python code/08_biology/02_pathway_enrichment.py
+python code/08_biology/03_module_overlap.py
+python code/08_biology/04_exemplar_panels_data.py
+python code/08_biology/05_convergence_null_model.py
 
-# 10. Simulation validation (or: python 09_simulation/00_run_phase9.py)
-python 09_simulation/01_generate_synthetic.py
-python 09_simulation/02_sim_compute_decoupling.py
-python 09_simulation/03_sim_param_sweeps.py
+# 10. Simulation validation (or: python code/09_simulation/00_run_phase9.py)
+python code/09_simulation/01_generate_synthetic.py
+python code/09_simulation/02_sim_compute_decoupling.py
+python code/09_simulation/03_sim_param_sweeps.py
 
 # 11. VAD diagnostic
-python 12_diagnostic/01_compute_vad.py
-python 12_diagnostic/02_validate_against_ablation.py
-python 12_diagnostic/03_plot_vad_panels.py
+python code/12_diagnostic/01_compute_vad.py
+python code/12_diagnostic/02_validate_against_ablation.py
+python code/12_diagnostic/03_plot_vad_panels.py
 
 # 12. Compile supplementary tables
-python 13_results/01_compile_supplementary_tables.py
-python 13_results/02_consolidate_supplementary_v2.py
+python code/13_results/01_compile_supplementary_tables.py
+python code/13_results/02_consolidate_supplementary_v2.py
 
 # 13. Supplementary analyses (runtime, cap-seed stability, LinearSVC sensitivity)
-python 14_supplementary_analyses/01_generate_feature_eta_tables.py --outputs-dir outputs
-python 14_supplementary_analyses/02_saf_feature_table_qc.py --outputs-dir outputs
-python 14_supplementary_analyses/03_runtime_benchmark.py --outputs-dir outputs
-python 14_supplementary_analyses/04_cap_seed_stability.py --outputs-dir outputs --data-dir data/raw
-python 14_supplementary_analyses/05_linearsvc_sensitivity.py --outputs-dir outputs
+python code/14_supplementary_analyses/01_generate_feature_eta_tables.py --outputs-dir outputs
+python code/14_supplementary_analyses/02_saf_feature_table_qc.py --outputs-dir outputs
+python code/14_supplementary_analyses/03_runtime_benchmark.py --outputs-dir outputs
+python code/14_supplementary_analyses/04_cap_seed_stability.py --outputs-dir outputs --data-dir data/raw
+python code/14_supplementary_analyses/05_linearsvc_sensitivity.py --outputs-dir outputs
 
 # 14. Generate publication figures
-python figures/main/figure_01_v7.py
-python figures/main/figure_02_v6.py
-python figures/main/figure_03_v4.py
-python figures/main/figure_04_v4.py
-python figures/main/figure_5_v9.py
-python figures/main/figure_6_v5.py
-python figures/supp/figure_S1.py
-python figures/supp/figure_S2.py
-python figures/supp/figure_S3.py
-python figures/supp/figure_S4.py
+python code/figures/main/figure_01_v7.py
+python code/figures/main/figure_02_v6.py
+python code/figures/main/figure_03_v4.py
+python code/figures/main/figure_04_v4.py
+python code/figures/main/figure_5_v9.py
+python code/figures/main/figure_6_v5.py
+python code/figures/supp/figure_S1.py
+python code/figures/supp/figure_S2.py
+python code/figures/supp/figure_S3.py
+python code/figures/supp/figure_S4.py
 ```
 
 Each script reads from `outputs/` and writes results back to the corresponding phase subfolder. Figure scripts produce publication-ready PDF/PNG files.
