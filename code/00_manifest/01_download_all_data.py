@@ -757,7 +757,11 @@ def main() -> None:
         return
 
     data_dir = Path(args.data_dir).resolve()
-    selected = [d.strip() for d in args.datasets.split(",") if d.strip()]
+    raw = args.datasets.strip().lower()
+    if raw == "all":
+        selected = list(ALL_DATASETS.keys())
+    else:
+        selected = [d.strip() for d in args.datasets.split(",") if d.strip()]
 
     invalid = [d for d in selected if d not in ALL_DATASETS]
     if invalid:
@@ -835,3 +839,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
