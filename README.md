@@ -135,6 +135,7 @@ Every script in this repository either (a) produces a result cited in the manusc
 ### Core Pipeline (47 scripts)
 
 ```
+
 var-pre/
 ├── README.md
 ├── requirements.txt
@@ -218,6 +219,12 @@ var-pre/
 │   ├── 04_cap_seed_stability.py                      # Feature-cap seed stability across VAD zones
 │   └── 05_linearsvc_sensitivity.py                   # LinearSVC regime sensitivity check
 │
+├── 15_val/                                           # Phase 15 · External validation
+│   ├── _val_utils.py                                 # Shared helpers for validation scripts
+│   ├── 01_build_external_validation_bundles.py       # Build GEO and DepMap/PRISM validation bundles
+│   ├── 02_run_external_validation_audit.py           # Inventory, VAD, ablation, tree-panel, final calls
+│   └── 03_explain_cd4_boundary_case.py               # Optional CD4 boundary-case explanatory analyses
+│
 ├── figures/                                          # Publication figure scripts
 │   ├── main/
 │   │   ├── figure_01_v7.py                           # Fig 1: Variance–prediction paradox
@@ -246,6 +253,7 @@ var-pre/
     ├── 07_triage_perm_vs_shap.py                     # Compare permutation importance vs SHAP ranks
     └── 07_validate_manuscript_claims.py              # Validate all manuscript claims against data
 ```
+
 
 ### Convenience Runners
 
