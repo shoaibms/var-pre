@@ -92,6 +92,50 @@ https://tcga.xenahubs.net/download/TCGA.GBM.sampleMap/GBM_clinicalMatrix
 
 Place in: `data/raw/tcga_gbm/`
 
+
+### 5) External validation datasets
+
+External validation used two independent public endpoint families. These datasets were not used to define DI, VAD, or the primary 14-view benchmark.
+
+#### GSE148725 — benralizumab response in severe asthma
+
+**Source:** NCBI GEO  
+**URL:** `https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE148725`  
+**Use in this study:** baseline whole-blood RNA-seq samples; ACT responder endpoint (`baseline__act_responder`)  
+**Reference:** Nakajima et al. (2021)
+
+Files are retrieved and converted to manuscript-standard validation bundles by:
+
+```bash
+python code/compute/15_val/01_build_external_validation_bundles.py --source geo_treatment
+```
+
+Generated bundles are written to:
+
+```text
+data/raw/val/
+```
+
+#### DepMap/PRISM drug-response validation
+
+**Source:** DepMap Portal and PRISM Repurposing resource  
+**Expression release:** DepMap Public 26Q1  
+**Drug-response release:** Harmonized PRISM Repurposing Secondary Screen 25Q2  
+**Use in this study:** protein-coding expression aligned to PRISM AUC values; lower-versus-upper AUC quartile contrasts for selected compounds  
+**References:** Ghandi et al. (2019); Corsello et al. (2020)
+
+Files are retrieved and converted to manuscript-standard validation bundles by:
+
+```bash
+python code/compute/15_val/01_build_external_validation_bundles.py --source depmap_prism --max-expression-features 0
+```
+
+Generated bundles are written to:
+
+```text
+data/raw/val/
+```
+
 ## Automated Download
 
 From the repository root, the pipeline includes a script that retrieves all datasets programmatically:
@@ -159,6 +203,15 @@ data/raw/
 | CCLE/DepMap | 369 | 22 (tissue lineage) | Tissue-of-origin | mRNA, CNV, proteomics | Primary |
 | TCGA-GBM | 47 | 4 (GBM subtypes) | GBM subtype | mRNA, methylation, CNV | Sensitivity |
 
+
+## External Validation Dataset Summary
+
+| Dataset | n | Classes | Task | View | Role |
+|---------|---|---------|------|------|------|
+| GSE148725 | 41 | 2 (ACT responder: no/yes) | Benralizumab response in severe asthma | baseline whole-blood RNA-seq | External validation |
+| DepMap/PRISM DPC-001961 | 238 | 2 (sensitive/resistant AUC quartiles) | Pan-cancer drug response | protein-coding expression | External validation |
+| DepMap/PRISM DPC-004364 | 224 | 2 (sensitive/resistant AUC quartiles) | Pan-cancer drug response | protein-coding expression | External validation |
+
 ## Sensitivity Views
 
 Two additional views were generated for robustness checks and do not require separate downloads.
@@ -193,6 +246,13 @@ Ultra-high-dimensional views were randomly subsampled (seed = 1, without replace
 6. TCGA Research Network (2008). Comprehensive genomic characterization defines human glioblastoma genes and core pathways. *Nature* 455, 1061–1068.
 
 7. Verhaak, R. G. W. et al. (2010). Integrated genomic analysis identifies clinically relevant subtypes of glioblastoma. *Cancer Cell* 17, 98–110.
+
+8. Goldman, M. J. et al. (2020). Visualizing and interpreting cancer genomics data via the Xena platform. *Nature Biotechnology* 38, 675–678.
+
+9. Nakajima, M. et al. (2021). Identification of whole blood gene expressions correlated with responsiveness to benralizumab. *Journal of Allergy and Clinical Immunology* 147, 772–775. doi:10.1016/j.jaci.2020.08.004.
+
+10. Corsello, S. M. et al. (2020). Discovering the anti-cancer potential of non-oncology drugs by systematic viability profiling. *Nature Cancer* 1, 235–248.
+
 
 
 8. Goldman, M.J. et al. (2020). Visualizing and interpreting cancer genomics data via the Xena platform. *Nature Biotechnology* 38, 675–678.
